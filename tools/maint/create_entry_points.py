@@ -23,6 +23,7 @@ em++
 '''.split()
 
 entry_points = '''
+bootstrap
 emar
 embuilder
 emcmake
@@ -57,18 +58,16 @@ entry_remap = {
 }
 
 tools_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+root_dir = os.path.dirname(tools_dir)
+sys.path.insert(0, root_dir)
+
+from tools import utils
 
 
 def main():
-  root_dir = os.path.dirname(tools_dir)
-
   def generate_entry_points(cmd, path):
-    sh_file = path + '.sh'
-    bat_file = path + '.bat'
-    with open(sh_file) as f:
-      sh_file = f.read()
-    with open(bat_file) as f:
-      bat_file = f.read()
+    sh_file = utils.read_file(path + '.sh')
+    bat_file = utils.read_file(path + '.bat')
 
     for entry_point in cmd:
       sh_data = sh_file
@@ -77,13 +76,13 @@ def main():
         sh_data = sh_data.replace('$0', '$(dirname $0)/' + entry_remap[entry_point])
         bat_data = bat_data.replace('%~n0', entry_remap[entry_point].replace('/', '\\'))
 
-      out_sh_file = os.path.join(root_dir, entry_point)
-      with open(out_sh_file, 'w') as f:
-        f.write(sh_data)
-      os.chmod(out_sh_file, stat.S_IMODE(os.stat(out_sh_file).st_mode) | stat.S_IXUSR)
-
-      with open(os.path.join(root_dir, entry_point + '.bat'), 'w') as f:
-        f.write(bat_data)
+      if utils.WINDOWS:
+        out_bat_file = os.path.join(root_dir, entry_point + '.bat')
+        utils.write_file(out_bat_file, bat_data)
+      else:
+        out_sh_file = os.path.join(root_dir, entry_point)
+        utils.write_file(out_sh_file, sh_data)
+        os.chmod(out_sh_file, stat.S_IMODE(os.stat(out_sh_file).st_mode) | stat.S_IXUSR)
 
   generate_entry_points(entry_points, os.path.join(tools_dir, 'run_python'))
   generate_entry_points(compiler_entry_points, os.path.join(tools_dir, 'run_python_compiler'))
