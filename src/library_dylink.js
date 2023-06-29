@@ -118,11 +118,6 @@ var LibraryDylink = {
       symName = 'orig$' + symName;
     }
 #endif
-#if !DISABLE_EXCEPTION_CATCHING
-    if (symName.startsWith('__cxa_find_matching_catch_')) {
-      symName = '__cxa_find_matching_catch';
-    }
-#endif
     if (isSymbolDefined(symName)) {
       sym = wasmImports[symName];
     }
@@ -131,6 +126,16 @@ var LibraryDylink = {
     else if (symName.startsWith('invoke_')) {
       // Create (and cache) new invoke_ functions on demand.
       sym = wasmImports[symName] = createInvokeFunction(symName.split('_')[1]);
+    }
+#endif
+#if !DISABLE_EXCEPTION_CATCHING
+    else if (symName.startsWith('__cxa_find_matching_catch_')) {
+      // If the specific __cxa_find_matching_catch_N handler is missing so
+      // create a new one at runtime.
+      sym = wasmImports[symName] = function() {
+        var rtn = findMatchingCatch(Array.from(arguments));
+        return {{{ to64('rtn') }}};
+      }
     }
 #endif
     return {sym, name: symName};
