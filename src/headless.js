@@ -11,13 +11,11 @@ var headlessPrint = (x) => {
 var window = {
   // adjustable parameters
   location: {
-    toString: function() {
-      return 'http://emscripten.org';
-    },
+    toString: () => 'http://emscripten.org',
     search: '',
     pathname: null,
   },
-  onIdle: function() {
+  onIdle: () => {
     headlessPrint('triggering click');
     document.querySelector('.fullscreen-button.low-res').callEventListeners('click');
     window.onIdle = null;
@@ -31,12 +29,12 @@ var window = {
   rafs: [],
   timeouts: [],
   uid: 0,
-  requestAnimationFrame: function(func) {
+  requestAnimationFrame: (func) => {
     func.uid = window.uid++;
     headlessPrint(`adding raf ${func.uid}`);
     window.rafs.push(func);
   },
-  setTimeout: function(func, ms) {
+  setTimeout: (func, ms) => {
     func.uid = window.uid++;
     headlessPrint(`adding timeout ${func.uid}`);
     window.timeouts.push({
@@ -45,7 +43,7 @@ var window = {
     });
     window.timeouts.sort((x, y) => { return y.when - x.when });
   },
-  runEventLoop: function() {
+  runEventLoop: () => {
     // run forever until an exception stops this replay
     var iter = 0;
     while (!this.stopped) {
@@ -81,15 +79,15 @@ var window = {
     }
   },
   eventListeners: {},
-  addEventListener: function(id, func) {
-    var listeners = this.eventListeners[id];
+  addEventListener: (id, func) => {
+    var listeners = window.eventListeners[id];
     if (!listeners) {
-      listeners = this.eventListeners[id] = [];
+      listeners = window.eventListeners[id] = [];
     }
     listeners.push(func);
   },
-  removeEventListener: function(id, func) {
-    var listeners = this.eventListeners[id];
+  removeEventListener: (id, func) => {
+    var listeners = window.eventListeners[id];
     if (!listeners) return;
     for (var i = 0; i < listeners.length; i++) {
       if (listeners[i] === func) {
@@ -98,19 +96,18 @@ var window = {
       }
     }
   },
-  callEventListeners: function(id) {
-    var listeners = this.eventListeners[id];
+  callEventListeners: (id) => {
+    var listeners = window.eventListeners[id];
     if (listeners) {
       listeners.forEach((listener) => listener());
     }
   },
   URL: {
-    createObjectURL: function(x) {
-      return x; // the blob itself is returned
-    },
-    revokeObjectURL: function(x) {},
+    // the blob itself is returned
+    createObjectURL: (x) => x,
+    revokeObjectURL: (x) => {},
   },
-  encodeURIComponent: function(x) { return x },
+  encodeURIComponent: (x) => x,
 };
 var setTimeout = window.setTimeout;
 var document = {
@@ -237,7 +234,7 @@ var Audio = () => {
   };
 };
 var Image = () => {
-  window.setTimeout(() => {
+  window.setTimeout(function() {
     this.complete = true;
     this.width = 64;
     this.height = 64;
@@ -290,9 +287,7 @@ var screen = { // XXX these values may need to be adjusted
 };
 if (typeof console == 'undefined') {
   console = {
-    log: function(x) {
-      print(x);
-    }
+    log: (x) => print(x),
   };
 }
 

@@ -12,7 +12,7 @@ mergeInto(LibraryManager.library, {
     FILE_MODE: {{{ cDefs.S_IFREG }}} | 511 /* 0777 */,
     CHUNK_SIZE: -1,
     codec: null,
-    init: function() {
+    init: () => {
       if (LZ4.codec) return;
       LZ4.codec = (function() {
         {{{ read('../third_party/mini-lz4.js') }}};
@@ -86,7 +86,7 @@ mergeInto(LibraryManager.library, {
       return node;
     },
     node_ops: {
-      getattr: function(node) {
+      getattr: (node) => {
         return {
           dev: 1,
           ino: node.id,
@@ -103,7 +103,7 @@ mergeInto(LibraryManager.library, {
           blocks: Math.ceil(node.size / 4096),
         };
       },
-      setattr: function(node, attr) {
+      setattr: (node, attr) => {
         if (attr.mode !== undefined) {
           node.mode = attr.mode;
         }
@@ -111,7 +111,7 @@ mergeInto(LibraryManager.library, {
           node.timestamp = attr.timestamp;
         }
       },
-      lookup: function(parent, name) {
+      lookup: (parent, name) => {
         throw new FS.ErrnoError({{{ cDefs.ENOENT }}});
       },
       mknod: function (parent, name, mode, dev) {
@@ -120,16 +120,16 @@ mergeInto(LibraryManager.library, {
       rename: function (oldNode, newDir, newName) {
         throw new FS.ErrnoError({{{ cDefs.EPERM }}});
       },
-      unlink: function(parent, name) {
+      unlink: (parent, name) => {
         throw new FS.ErrnoError({{{ cDefs.EPERM }}});
       },
-      rmdir: function(parent, name) {
+      rmdir: (parent, name) => {
         throw new FS.ErrnoError({{{ cDefs.EPERM }}});
       },
-      readdir: function(node) {
+      readdir: (node) => {
         throw new FS.ErrnoError({{{ cDefs.EPERM }}});
       },
-      symlink: function(parent, newName, oldPath) {
+      symlink: (parent, newName, oldPath) => {
         throw new FS.ErrnoError({{{ cDefs.EPERM }}});
       },
     },

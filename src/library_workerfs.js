@@ -74,7 +74,7 @@ mergeInto(LibraryManager.library, {
       return node;
     },
     node_ops: {
-      getattr: function(node) {
+      getattr: (node) => {
         return {
           dev: 1,
           ino: node.id,
@@ -91,7 +91,7 @@ mergeInto(LibraryManager.library, {
           blocks: Math.ceil(node.size / 4096),
         };
       },
-      setattr: function(node, attr) {
+      setattr: (node, attr) => {
         if (attr.mode !== undefined) {
           node.mode = attr.mode;
         }
@@ -99,7 +99,7 @@ mergeInto(LibraryManager.library, {
           node.timestamp = attr.timestamp;
         }
       },
-      lookup: function(parent, name) {
+      lookup: (parent, name) => {
         throw new FS.ErrnoError({{{ cDefs.ENOENT }}});
       },
       mknod: function (parent, name, mode, dev) {
@@ -108,13 +108,13 @@ mergeInto(LibraryManager.library, {
       rename: function (oldNode, newDir, newName) {
         throw new FS.ErrnoError({{{ cDefs.EPERM }}});
       },
-      unlink: function(parent, name) {
+      unlink: (parent, name) => {
         throw new FS.ErrnoError({{{ cDefs.EPERM }}});
       },
-      rmdir: function(parent, name) {
+      rmdir: (parent, name) => {
         throw new FS.ErrnoError({{{ cDefs.EPERM }}});
       },
-      readdir: function(node) {
+      readdir: (node) => {
         var entries = ['.', '..'];
         for (var key in node.contents) {
           if (!node.contents.hasOwnProperty(key)) {
@@ -124,7 +124,7 @@ mergeInto(LibraryManager.library, {
         }
         return entries;
       },
-      symlink: function(parent, newName, oldPath) {
+      symlink: (parent, newName, oldPath) => {
         throw new FS.ErrnoError({{{ cDefs.EPERM }}});
       },
     },

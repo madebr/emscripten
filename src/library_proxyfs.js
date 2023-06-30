@@ -30,7 +30,7 @@ mergeInto(LibraryManager.library, {
       return PATH.join.apply(null, parts);
     },
     node_ops: {
-      getattr: function(node) {
+      getattr: (node) => {
         var path = PROXYFS.realPath(node);
         var stat;
         try {
@@ -55,7 +55,7 @@ mergeInto(LibraryManager.library, {
           blocks: stat.blocks
         };
       },
-      setattr: function(node, attr) {
+      setattr: (node, attr) => {
         var path = PROXYFS.realPath(node);
         try {
           if (attr.mode !== undefined) {
@@ -114,7 +114,7 @@ mergeInto(LibraryManager.library, {
           throw new FS.ErrnoError(ERRNO_CODES[e.code]);
         }
       },
-      unlink: function(parent, name) {
+      unlink: (parent, name) => {
         var path = PATH.join2(PROXYFS.realPath(parent), name);
         try {
           parent.mount.opts.fs.unlink(path);
@@ -123,7 +123,7 @@ mergeInto(LibraryManager.library, {
           throw new FS.ErrnoError(ERRNO_CODES[e.code]);
         }
       },
-      rmdir: function(parent, name) {
+      rmdir: (parent, name) => {
         var path = PATH.join2(PROXYFS.realPath(parent), name);
         try {
           parent.mount.opts.fs.rmdir(path);
@@ -132,7 +132,7 @@ mergeInto(LibraryManager.library, {
           throw new FS.ErrnoError(ERRNO_CODES[e.code]);
         }
       },
-      readdir: function(node) {
+      readdir: (node) => {
         var path = PROXYFS.realPath(node);
         try {
           return node.mount.opts.fs.readdir(path);
@@ -141,7 +141,7 @@ mergeInto(LibraryManager.library, {
           throw new FS.ErrnoError(ERRNO_CODES[e.code]);
         }
       },
-      symlink: function(parent, newName, oldPath) {
+      symlink: (parent, newName, oldPath) => {
         var newPath = PATH.join2(PROXYFS.realPath(parent), newName);
         try {
           parent.mount.opts.fs.symlink(oldPath, newPath);
@@ -150,7 +150,7 @@ mergeInto(LibraryManager.library, {
           throw new FS.ErrnoError(ERRNO_CODES[e.code]);
         }
       },
-      readlink: function(node) {
+      readlink: (node) => {
         var path = PROXYFS.realPath(node);
         try {
           return node.mount.opts.fs.readlink(path);
