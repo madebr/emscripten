@@ -12621,6 +12621,10 @@ Module.postRun = () => {{
           [key]: 42,
         };
         err('value: ' + obj2[key]);
+
+        // optional chaining
+        let result = Module.foo?.doSomething();
+        err('result: ' + result);
       }
     });
     ''')
@@ -12635,6 +12639,7 @@ Module.postRun = () => {{
         self.assertContained(['() => 2', '()=>2'], js)
         self.assertContained('const ', js)
         self.assertContained('let ', js)
+        self.assertContained('foo?.doSomething()', js)
       else:
         self.verify_es5(filename)
         self.assertNotContained('foo(arg=', js)
@@ -12642,6 +12647,7 @@ Module.postRun = () => {{
         self.assertNotContained('()=>2', js)
         self.assertNotContained('const ', js)
         self.assertNotContained('let ', js)
+        self.assertNotContained('foo?.doSomething()', js)
 
     # Check that under normal circumstances none of these features get
     # removed / transpiled.
